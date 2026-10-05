@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vortex Industries // Beyond Silicon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030712;
+      --card-bg: rgba(15, 23, 42, 0.65);
+      --card-border: rgba(56, 189, 248, 0.15);
+      --card-hover: rgba(56, 189, 248, 0.35);
+      --cyan: #00F0FF;
+      --violet: #8B5CF6;
+      --emerald: #10B981;
+      --text: #F8FAFC;
+      --muted: #94A3B8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Interactive Fluid WebGL/Canvas Background */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .grain {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at 50% 50%, transparent 60%, rgba(3, 7, 18, 0.8) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Content Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Navigation */
+    nav {
+      padding: 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #FFF;
+      font-weight: 900;
+      font-size: 1.35rem;
+      letter-spacing: -0.03em;
+    }
+    .logo-glyph {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+      display: grid;
+      place-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #030712;
+    }
+    .nav-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .btn-discord {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(139, 92, 246, 0.2));
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: 0.02em;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-discord:hover {
+      background: var(--cyan);
+      color: #030712;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
+      transform: translateY(-2px);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 120px 0 80px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 9999px;
+      padding: 6px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--cyan);
+      margin-bottom: 24px;
+      animation: pulseGlow 4s infinite ease-in-out;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
+      50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.4); }
+    }
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      background: linear-gradient(180deg, #FFFFFF 30%, #94A3B8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 24px;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--violet) 50%, #EC4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      max-width: 650px;
+      margin: 0 auto 40px;
+      font-size: 1.2rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .hero-cta {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+    .btn-primary {
+      background: #FFFFFF;
+      color: #030712;
+      font-weight: 800;
+      text-decoration: none;
+      padding: 16px 36px;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 0 60px rgba(0, 240, 255, 0.6);
+    }
+
+    /* Showcase Grid */
+    .grid-title {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .grid-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
+    }
+    .showcase {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 24px;
+      margin-bottom: 120px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 32px;
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: var(--card-hover);
+      box-shadow: 0 20px 40px -15px rgba(0, 240, 255, 0.2);
+    }
+    .card:hover::before { opacity: 1; }
+    .card-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 16px;
+    }
+    .card h3 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #FFF;
+      letter-spacing: -0.02em;
+    }
+    .card p {
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.6;
+      flex: 1;
+      margin-bottom: 24px;
+    }
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .card-link {
+      color: #FFF;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: gap 0.2s ease;
+    }
+    .card-link:hover { gap: 10px; color: var(--cyan); }
+
+    /* Founder Section */
+    .founder-banner {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.4));
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 24px;
+      padding: 48px;
+      margin-bottom: 120px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .founder-info h2 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      letter-spacing: -0.03em;
+    }
+    .founder-info p {
+      color: var(--muted);
+      max-width: 600px;
+      line-height: 1.6;
+      font-size: 1.05rem;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 48px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    footer a { color: var(--cyan); text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <!-- WebGL/Canvas Shader-Grade Interactive Nebula Background -->
+  <canvas id="bg-canvas"></canvas>
+  <div class="grain"></div>
+
+  <div class="container">
+    <nav>
+      <a href="#" class="logo">
+        <div class="logo-glyph">V</div>
+        <span>VORTEX INDUSTRIES</span>
+      </a>
+      <div class="nav-actions">
+        <a href="https://github.com/athallajovian9-cyber" target="_blank" style="color: var(--muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;">GitHub</a>
+        <a href="https://discord.gg/QtyBucygQ6" target="_blank" class="btn-discord">
+          <span>💎 First 100 Badge</span>
+        </a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-badge">⚡ THE FUTURE OF LOW-LEVEL & AI ENGINEERING</div>
+      <h1>Architecting Systems That Defy <span>Limits.</span></h1>
+      <p>Home of high-speed x86_64 microkernels, ultra-lightweight telemetry monitors, AI CLI quota optimizers, and educational developer suites.</p>
+      <div class="hero-cta">
+        <a href="#showcase" class="btn-primary">Explore Technologies</a>
+      </div>
+    </header>
+
+    <section id="showcase">
+      <div class="grid-title">FLAGSHIP INNOVATIONS</div>
+      <div class="showcase">
+
+        <!-- VortecoreOS -->
+        <article class="card">
+          <div class="card-tag">SYSTEMS ARCHITECTURE</div>
+          <h3>VortecoreOS</h3>
+          <p>An autonomous x86_64 microkernel featuring a 32-bit linear framebuffer VESA compositor, live dynamic profile switcher (Gaming, RTOS, Dev, Security), and Linux-style ATA installer.</p>
+          <div class="card-footer">
+            <span style="font-size: 0.85rem; color: var(--muted);">Freestanding C & Rust</span>
+            <a href="https://vortecore.pages.dev" target="_blank" class="card-link">Live Site ↗</a>
+          </div>
+        </article>
+
+        <!-- Vortex TokenSaver -->
+        <article class="card">
+          <div class="card-tag">AI INFRASTRUCTURE</div>
+          <h3>Vortex TokenSaver</h3>
+          <p>Universal AI CLI quota saver proxy. Saves 30%-60% tokens for Claude Code, Antigravity, and Hermes through semantic lossless de-fluffing and system deduplication.</p>
+          <div class="card-footer">
+            <span style="font-size: 0.85rem; color: var(--muted);">Node.js Proxy</span>
+            <a href="https://github.com/athallajovian9-cyber/VortexTokenSaver" target="_blank" class="card-link">View Repo ↗</a>
+          </div>
+        </article>
+
+        <!-- Vortex Pulse -->
+        <article class="card">
+          <div class="card-tag">SYSTEM TELEMETRY</div>
+          <h3>Vortex Pulse</h3>
+          <p>Cyberpunk hardware HUD with zero external dependencies. Interfaces directly with Win32 kernel32 C-structs, rendering live 60 FPS CPU & RAM oscilloscope waveforms.</p>
+          <div class="card-footer">
+            <span style="font-size: 0.85rem; color: var(--muted);">Native Win32 HUD</span>
+            <a href="https://github.com/athallajovian9-cyber/VortexPulse" target="_blank" class="card-link">View Repo ↗</a>
+          </div>
+        </article>
+
+        <!-- CodeCoach Core -->
+        <article class="card">
+          <div class="card-tag">EDUCATION ENGINE</div>
+          <h3>CodeCoach 2.0</h3>
+          <p>Unified kid-friendly multi-language code review engine built in TypeScript and Node.js. Catches runaway freeze loops and bugs across Python, TS, JS, Luau, and HTML.</p>
+          <div class="card-footer">
+            <span style="font-size: 0.85rem; color: var(--muted);">TypeScript & Node.js</span>
+            <a href="https://github.com/athallajovian9-cyber/CodeCoachCore" target="_blank" class="card-link">View Repo ↗</a>
+          </div>
+        </article>
+
+        <!-- BioLang -->
+        <article class="card">
+          <div class="card-tag">COMPILERS & RUNTIMES</div>
+          <h3>BioLang</h3>
+          <p>A programming language where keywords are biological mechanisms. Self-hosting milestone stage 3: lexer, parser, and runtime evaluator written directly in BioLang.</p>
+          <div class="card-footer">
+            <span style="font-size: 0.85rem; color: var(--muted);">Self-Hosting Compiler</span>
+            <a href="https://github.com/athallajovian9-cyber/BioLang" target="_blank" class="card-link">View Repo ↗</a>
+          </div>
+        </article>
+
+        <!-- GrokBot Free -->
+        <article class="card">
+          <div class="card-tag">AUTONOMOUS ASSISTANTS</div>
+          <h3>GrokBot Free</h3>
+          <p>Desktop AI workstation featuring zero-cost BYOK engine, persistent memory buffers, multi-bot routing, and direct desktop tool execution.</p>
+          <div class="card-footer">
+            <span style="font-size: 0.85rem; color: var(--muted);">Autonomous AI</span>
+            <a href="https://discord.gg/QtyBucygQ6" target="_blank" class="card-link">Join Discord ↗</a>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Founder Recognition -->
+    <div class="founder-banner">
+      <div class="founder-info">
+        <h2>Founded by Athalla Jovian Maharsa</h2>
+        <p>Vortex Industries was conceived and built from the ground up by its sole founder, dedicated to open-source software, lightning-fast microkernels, and zero-compromise developer tooling.</p>
+      </div>
+      <div>
+        <a href="https://discord.gg/QtyBucygQ6" target="_blank" class="btn-discord" style="font-size: 1rem; padding: 14px 28px;">
+          Claim First 100 Badge 💎
+        </a>
+      </div>
+    </div>
+
+    <footer>
+      <p>© 2026 Vortex Industries. Built by <a href="https://athalla-projects.pages.dev" target="_blank">Athalla Jovian Maharsa</a>. Hosted on Cloudflare Pages.</p>
+    </footer>
+  </div>
+
+  <!-- Interactive Hyperspace Nebula Canvas Script -->
+  <script>
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const PARTICLE_COUNT = 90;
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.45;
+        this.vy = (Math.random() - 0.5) * 0.45;
+        this.radius = Math.random() * 2 + 0.8;
+        this.color = Math.random() > 0.4 ? 'rgba(0, 240, 255, ' : 'rgba(139, 92, 246, ';
+        this.alpha = Math.random() * 0.6 + 0.2;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color + this.alpha + ')';
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = this.color + '0.8)';
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(new Particle());
+    }
+
+    // Interactive mouse vortex
+    let mouse = { x: width / 2, y: height / 2, active: false };
+    window.addEventListener('mousemove', e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      mouse.active = true;
+    });
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw faint connections
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 130) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(56, 189, 248, ${0.15 * (1 - dist / 130)})`;
+            ctx.stroke();
+          }
+        }
+      }
+
+      particles.forEach(p => {
+        if (mouse.active) {
+          const dx = mouse.x - p.x;
+          const dy = mouse.y - p.y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 160) {
+            p.x -= (dx / d) * 0.8;
+            p.y -= (dy / d) * 0.8;
+          }
+        }
+        p.update();
+        p.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
