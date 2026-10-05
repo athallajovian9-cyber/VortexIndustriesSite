@@ -119,43 +119,49 @@
       transform: translateY(-2px);
     }
 
-    /* Hero Section */
+    /* Epic Hero Section */
     .hero {
-      padding: 120px 0 80px;
+      padding: 130px 0 90px;
       text-align: center;
+      position: relative;
     }
     .hero-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       background: rgba(0, 240, 255, 0.08);
-      border: 1px solid rgba(0, 240, 255, 0.25);
+      border: 1px solid rgba(0, 240, 255, 0.35);
       border-radius: 9999px;
-      padding: 6px 16px;
+      padding: 8px 22px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
+      font-weight: 700;
       color: var(--cyan);
-      margin-bottom: 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.25);
       animation: pulseGlow 4s infinite ease-in-out;
     }
     @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
-      50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.4); }
+      0%, 100% { box-shadow: 0 0 25px rgba(0, 240, 255, 0.3); border-color: rgba(0, 240, 255, 0.4); }
+      50% { box-shadow: 0 0 50px rgba(139, 92, 246, 0.6); border-color: rgba(139, 92, 246, 0.7); }
     }
     .hero h1 {
-      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-size: clamp(3rem, 7.8vw, 6.2rem);
       font-weight: 900;
-      line-height: 1.05;
+      line-height: 1.02;
       letter-spacing: -0.04em;
-      background: linear-gradient(180deg, #FFFFFF 30%, #94A3B8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
-    .hero h1 span {
-      background: linear-gradient(135deg, var(--cyan) 0%, var(--violet) 50%, #EC4899 100%);
+    .hero h1 .text-glow {
+      background: linear-gradient(135deg, #FFFFFF 20%, #E2E8F0 60%, #94A3B8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+    .hero h1 .gradient-word {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--violet) 45%, #EC4899 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 45px rgba(0, 240, 255, 0.5));
     }
     .hero p {
       max-width: 650px;
@@ -335,7 +341,10 @@
 
     <header class="hero">
       <div class="hero-badge">⚡ THE FUTURE OF LOW-LEVEL & AI ENGINEERING</div>
-      <h1>Architecting Systems That Defy <span>Limits.</span></h1>
+      <h1>
+        <span class="text-glow">Beyond Limits.</span><br>
+        <span class="gradient-word">Beyond Silicon.</span>
+      </h1>
       <p>Home of high-speed x86_64 microkernels, ultra-lightweight telemetry monitors, AI CLI quota optimizers, and educational developer suites.</p>
       <div class="hero-cta">
         <a href="#showcase" class="btn-primary">Explore Technologies</a>
@@ -446,84 +455,69 @@
       height = canvas.height = window.innerHeight;
     });
 
-    const particles = [];
-    const PARTICLE_COUNT = 90;
+    <!-- Interactive 3D Nebula & Hyperspace Warp Drive Canvas -->
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
 
-    class Particle {
-      constructor() {
-        this.reset();
-      }
-      reset() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
-        this.vx = (Math.random() - 0.5) * 0.45;
-        this.vy = (Math.random() - 0.5) * 0.45;
-        this.radius = Math.random() * 2 + 0.8;
-        this.color = Math.random() > 0.4 ? 'rgba(0, 240, 255, ' : 'rgba(139, 92, 246, ';
-        this.alpha = Math.random() * 0.6 + 0.2;
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
-          this.reset();
-        }
-      }
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = this.color + this.alpha + ')';
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = this.color + '0.8)';
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const STARS_COUNT = 180;
+    const stars = [];
+
+    for (let i = 0; i < STARS_COUNT; i++) {
+      stars.push({
+        x: (Math.random() - 0.5) * width * 2,
+        y: (Math.random() - 0.5) * height * 2,
+        z: Math.random() * width,
+        color: Math.random() > 0.4 ? 'rgba(0, 240, 255, ' : (Math.random() > 0.5 ? 'rgba(168, 85, 247, ' : 'rgba(236, 72, 153, ')
+      });
     }
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push(new Particle());
-    }
-
-    // Interactive mouse vortex
-    let mouse = { x: width / 2, y: height / 2, active: false };
+    let mouse = { x: 0, y: 0 };
     window.addEventListener('mousemove', e => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-      mouse.active = true;
+      mouse.x = (e.clientX - width / 2) * 0.04;
+      mouse.y = (e.clientY - height / 2) * 0.04;
     });
 
     function animate() {
-      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "rgba(3, 7, 18, 0.25)";
+      ctx.fillRect(0, 0, width, height);
 
-      // Draw faint connections
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 130) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(56, 189, 248, ${0.15 * (1 - dist / 130)})`;
-            ctx.stroke();
-          }
+      const cx = width / 2;
+      const cy = height / 2;
+
+      for (let i = 0; i < STARS_COUNT; i++) {
+        const s = stars[i];
+        s.z -= 2.8;
+
+        if (s.z <= 0) {
+          s.z = width;
+          s.x = (Math.random() - 0.5) * width * 2;
+          s.y = (Math.random() - 0.5) * height * 2;
+        }
+
+        const k = 240 / s.z;
+        const px = (s.x + mouse.x * (s.z * 0.015)) * k + cx;
+        const py = (s.y + mouse.y * (s.z * 0.015)) * k + cy;
+
+        if (px >= 0 && px <= width && py >= 0 && py <= height) {
+          const size = Math.max(0.7, (1 - s.z / width) * 3.2);
+          const alpha = (1 - s.z / width);
+          ctx.beginPath();
+          ctx.arc(px, py, size, 0, Math.PI * 2);
+          ctx.fillStyle = s.color + alpha + ')';
+          ctx.shadowBlur = size * 5;
+          ctx.shadowColor = s.color + '1)';
+          ctx.fill();
+          ctx.shadowBlur = 0;
         }
       }
-
-      particles.forEach(p => {
-        if (mouse.active) {
-          const dx = mouse.x - p.x;
-          const dy = mouse.y - p.y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 160) {
-            p.x -= (dx / d) * 0.8;
-            p.y -= (dy / d) * 0.8;
-          }
-        }
-        p.update();
-        p.draw();
-      });
 
       requestAnimationFrame(animate);
     }
