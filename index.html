@@ -3,543 +3,570 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vortex Industries // Beyond Silicon</title>
+  <title>VORTEX INDUSTRIES // THE QUANTUM CIRCUIT</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Three.js + GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
   <style>
     :root {
-      --bg: #030712;
-      --card-bg: rgba(15, 23, 42, 0.65);
-      --card-border: rgba(56, 189, 248, 0.15);
-      --card-hover: rgba(56, 189, 248, 0.35);
+      --bg: #010409;
       --cyan: #00F0FF;
       --violet: #8B5CF6;
-      --emerald: #10B981;
+      --rose: #F43F5E;
       --text: #F8FAFC;
       --muted: #94A3B8;
+      --card-bg: rgba(10, 16, 28, 0.75);
+      --card-border: rgba(0, 240, 255, 0.25);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
+    html, body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Plus Jakarta Sans', sans-serif;
       overflow-x: hidden;
       min-height: 100vh;
-      position: relative;
     }
 
-    /* Interactive Fluid WebGL/Canvas Background */
-    #bg-canvas {
+    /* Pinned Background WebGL Canvas */
+    #webgl-canvas {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .grain {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle at 50% 50%, transparent 60%, rgba(3, 7, 18, 0.8) 100%);
-      pointer-events: none;
       z-index: 1;
+      pointer-events: none;
     }
 
-    /* Content Layout */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-      position: relative;
-      z-index: 2;
-    }
-
-    /* Navigation */
+    /* Fixed Navigation */
     nav {
-      padding: 28px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 24px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(16px);
-      position: sticky;
-      top: 0;
-      z-index: 50;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
-    .logo {
+    .brand {
       display: flex;
       align-items: center;
       gap: 12px;
       text-decoration: none;
       color: #FFF;
       font-weight: 900;
-      font-size: 1.35rem;
-      letter-spacing: -0.03em;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
     }
-    .logo-glyph {
+    .brand-core {
       width: 34px;
       height: 34px;
       border-radius: 8px;
       background: linear-gradient(135deg, var(--cyan), var(--violet));
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
       display: grid;
       place-items: center;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 1.1rem;
       font-weight: 900;
-      color: #030712;
+      color: #010409;
     }
-    .nav-actions {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-    .btn-discord {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(139, 92, 246, 0.2));
+    .btn-badge {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(139, 92, 246, 0.25));
       border: 1px solid var(--cyan);
       color: var(--cyan);
       text-decoration: none;
       padding: 10px 22px;
       border-radius: 9999px;
-      font-weight: 700;
-      font-size: 0.88rem;
-      letter-spacing: 0.02em;
+      font-weight: 800;
+      font-size: 0.85rem;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
-    .btn-discord:hover {
+    .btn-badge:hover {
       background: var(--cyan);
-      color: #030712;
-      box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
+      color: #010409;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.7);
       transform: translateY(-2px);
     }
 
-    /* Epic Hero Section */
-    .hero {
-      padding: 130px 0 90px;
-      text-align: center;
+    /* 4-Stage Scroll Hierarchy */
+    .scroll-container {
       position: relative;
+      z-index: 10;
     }
-    .hero-badge {
+
+    .stage {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 140px 48px;
+      position: relative;
+      opacity: 1;
+    }
+
+    /* Stage 01: Macro View (Hero) */
+    .stage-01 {
+      align-items: center;
+      text-align: center;
+    }
+    .pill {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       background: rgba(0, 240, 255, 0.08);
       border: 1px solid rgba(0, 240, 255, 0.35);
-      border-radius: 9999px;
       padding: 8px 22px;
+      border-radius: 9999px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      font-weight: 700;
+      font-size: 0.82rem;
       color: var(--cyan);
-      margin-bottom: 28px;
-      box-shadow: 0 0 35px rgba(0, 240, 255, 0.25);
-      animation: pulseGlow 4s infinite ease-in-out;
+      margin-bottom: 24px;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
     }
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 25px rgba(0, 240, 255, 0.3); border-color: rgba(0, 240, 255, 0.4); }
-      50% { box-shadow: 0 0 50px rgba(139, 92, 246, 0.6); border-color: rgba(139, 92, 246, 0.7); }
-    }
-    .hero h1 {
-      font-size: clamp(3rem, 7.8vw, 6.2rem);
+    .hero-title {
+      font-size: clamp(3.2rem, 7.5vw, 6.2rem);
       font-weight: 900;
       line-height: 1.02;
       letter-spacing: -0.04em;
-      margin-bottom: 28px;
-    }
-    .hero h1 .text-glow {
-      background: linear-gradient(135deg, #FFFFFF 20%, #E2E8F0 60%, #94A3B8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .hero h1 .gradient-word {
-      background: linear-gradient(135deg, var(--cyan) 0%, var(--violet) 45%, #EC4899 90%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 45px rgba(0, 240, 255, 0.5));
-    }
-    .hero p {
-      max-width: 650px;
-      margin: 0 auto 40px;
-      font-size: 1.2rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-    .hero-cta {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-    }
-    .btn-primary {
-      background: #FFFFFF;
-      color: #030712;
-      font-weight: 800;
-      text-decoration: none;
-      padding: 16px 36px;
-      border-radius: 12px;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
-    }
-    .btn-primary:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 0 60px rgba(0, 240, 255, 0.6);
-    }
-
-    /* Showcase Grid */
-    .grid-title {
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin-bottom: 40px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .grid-title::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
-    }
-    .showcase {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 24px;
-      margin-bottom: 120px;
-    }
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 32px;
-      backdrop-filter: blur(20px);
-      position: relative;
-      overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex;
-      flex-direction: column;
-    }
-    .card::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-    .card:hover {
-      transform: translateY(-8px);
-      border-color: var(--card-hover);
-      box-shadow: 0 20px 40px -15px rgba(0, 240, 255, 0.2);
-    }
-    .card:hover::before { opacity: 1; }
-    .card-tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--cyan);
-      margin-bottom: 16px;
-    }
-    .card h3 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      margin-bottom: 12px;
-      color: #FFF;
-      letter-spacing: -0.02em;
-    }
-    .card p {
-      color: var(--muted);
-      font-size: 0.98rem;
-      line-height: 1.6;
-      flex: 1;
       margin-bottom: 24px;
     }
-    .card-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 18px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    .hero-title span {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--violet) 50%, var(--rose) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 40px rgba(0, 240, 255, 0.4));
     }
-    .card-link {
-      color: #FFF;
-      font-weight: 700;
-      font-size: 0.9rem;
-      text-decoration: none;
+    .hero-sub {
+      font-size: 1.25rem;
+      color: var(--muted);
+      max-width: 680px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .scroll-indicator {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--cyan);
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: gap 0.2s ease;
+      gap: 8px;
+      animation: pulseBounce 2s infinite ease-in-out;
     }
-    .card-link:hover { gap: 10px; color: var(--cyan); }
+    @keyframes pulseBounce {
+      0%, 100% { transform: translateY(0); opacity: 0.8; }
+      50% { transform: translateY(8px); opacity: 1; }
+    }
 
-    /* Founder Section */
-    .founder-banner {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.4));
-      border: 1px solid rgba(139, 92, 246, 0.3);
-      border-radius: 24px;
-      padding: 48px;
-      margin-bottom: 120px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 32px;
-      position: relative;
-      overflow: hidden;
+    /* Stage 02: Outer Matrix (Features) */
+    .stage-02 {
+      max-width: 1300px;
+      margin: 0 auto;
+      width: 100%;
     }
-    .founder-info h2 {
-      font-size: 2.2rem;
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+    }
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 40px;
+      backdrop-filter: blur(30px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      transition: all 0.3s ease;
+    }
+    .glass-card:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 40px rgba(0, 240, 255, 0.3);
+      transform: translateY(-4px);
+    }
+    .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 14px;
+    }
+    .glass-card h3 {
+      font-size: 2rem;
       font-weight: 900;
       margin-bottom: 12px;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.02em;
+      color: #FFF;
     }
-    .founder-info p {
+    .glass-card p {
       color: var(--muted);
-      max-width: 600px;
-      line-height: 1.6;
       font-size: 1.05rem;
+      line-height: 1.65;
     }
 
-    /* Footer */
+    /* Stage 03: Circuit Injection (Deep Dive) */
+    .stage-03 {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .dive-panel {
+      background: rgba(1, 4, 9, 0.88);
+      border: 1px solid rgba(139, 92, 246, 0.45);
+      border-radius: 28px;
+      padding: 56px;
+      backdrop-filter: blur(36px);
+      box-shadow: 0 0 80px rgba(139, 92, 246, 0.25);
+    }
+    .dive-panel h2 {
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #FFF, var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .dive-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-top: 36px;
+    }
+    .stat-box {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 24px;
+      background: rgba(15, 23, 42, 0.5);
+    }
+    .stat-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--cyan);
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Stage 04: Infinite Canvas (Footer & Monument) */
+    .stage-04 {
+      align-items: center;
+      text-align: center;
+    }
+    .monument-box {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.65));
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      border-radius: 32px;
+      padding: 64px 48px;
+      max-width: 880px;
+      width: 100%;
+      backdrop-filter: blur(40px);
+      box-shadow: 0 0 90px rgba(0, 240, 255, 0.3);
+    }
+    .monument-box h2 {
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+    .monument-box p {
+      color: var(--muted);
+      font-size: 1.15rem;
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+    .btn-discord-large {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      color: #010409;
+      font-weight: 900;
+      font-size: 1.15rem;
+      text-decoration: none;
+      padding: 18px 44px;
+      border-radius: 16px;
+      box-shadow: 0 0 50px rgba(0, 240, 255, 0.7);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-discord-large:hover {
+      transform: translateY(-4px) scale(1.04);
+      box-shadow: 0 0 80px rgba(0, 240, 255, 0.95);
+    }
+
     footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 48px 0;
+      padding: 44px 0;
       text-align: center;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.92rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      z-index: 10;
     }
-    footer a { color: var(--cyan); text-decoration: none; font-weight: 600; }
+    footer a { color: var(--cyan); text-decoration: none; font-weight: 700; }
   </style>
 </head>
 <body>
 
-  <!-- WebGL/Canvas Shader-Grade Interactive Nebula Background -->
-  <canvas id="bg-canvas"></canvas>
-  <div class="grain"></div>
+  <!-- Pinned Three.js Quantum Microprocessor Canvas -->
+  <canvas id="webgl-canvas"></canvas>
 
-  <div class="container">
-    <nav>
-      <a href="#" class="logo">
-        <div class="logo-glyph">V</div>
-        <span>VORTEX INDUSTRIES</span>
-      </a>
-      <div class="nav-actions">
-        <a href="https://github.com/athallajovian9-cyber" target="_blank" style="color: var(--muted); text-decoration: none; font-weight: 600; font-size: 0.9rem;">GitHub</a>
-        <a href="https://discord.gg/QtyBucygQ6" target="_blank" class="btn-discord">
-          <span>💎 First 100 Badge</span>
-        </a>
-      </div>
-    </nav>
+  <nav>
+    <a href="#" class="brand">
+      <div class="brand-core">V</div>
+      <span>VORTEX INDUSTRIES</span>
+    </a>
+    <div>
+      <a href="https://discord.gg/QtyBucygQ6" target="_blank" class="btn-badge">💎 Claim First 100 Badge</a>
+    </div>
+  </nav>
 
-    <header class="hero">
-      <div class="hero-badge">⚡ THE FUTURE OF LOW-LEVEL & AI ENGINEERING</div>
-      <h1>
-        <span class="text-glow">Beyond Limits.</span><br>
-        <span class="gradient-word">Beyond Silicon.</span>
+  <div class="scroll-container">
+
+    <!-- Stage 01: Macro View -->
+    <section class="stage stage-01" id="stage1">
+      <div class="pill">⚡ THE QUANTUM CIRCUIT // 3D MICROPROCESSOR CUBE</div>
+      <h1 class="hero-title">
+        Architecture<br>
+        <span>Beyond Silicon.</span>
       </h1>
-      <p>Home of high-speed x86_64 microkernels, ultra-lightweight telemetry monitors, AI CLI quota optimizers, and educational developer suites.</p>
-
-      <!-- Interactive 3D Model Rendered with Blender -->
-      <div style="width: 100%; max-width: 480px; height: 380px; margin: 0 auto 36px; position: relative;">
-        <model-viewer
-          src="vortex_core.glb"
-          alt="3D Quantum Vortex Core modeled in Blender"
-          auto-rotate
-          rotation-per-second="25deg"
-          camera-controls
-          disable-zoom
-          shadow-intensity="2"
-          exposure="1.2"
-          style="width: 100%; height: 100%; --poster-color: transparent;"
-        ></model-viewer>
-        <div style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--cyan); background: rgba(3, 7, 18, 0.7); padding: 4px 12px; border-radius: 9999px; border: 1px solid rgba(0, 240, 255, 0.3); pointer-events: none;">
-          ⚡ BLENDER 3D GYROSCOPE // DRAG TO ROTATE
-        </div>
-      </div>
-
-      <div class="hero-cta">
-        <a href="#showcase" class="btn-primary">Explore Technologies</a>
-      </div>
-    </header>
-
-    <section id="showcase">
-      <div class="grid-title">FLAGSHIP INNOVATIONS</div>
-      <div class="showcase">
-
-        <!-- VortecoreOS -->
-        <article class="card">
-          <div class="card-tag">SYSTEMS ARCHITECTURE</div>
-          <h3>VortecoreOS</h3>
-          <p>An autonomous x86_64 microkernel featuring a 32-bit linear framebuffer VESA compositor, live dynamic profile switcher (Gaming, RTOS, Dev, Security), and Linux-style ATA installer.</p>
-          <div class="card-footer">
-            <span style="font-size: 0.85rem; color: var(--muted);">Freestanding C & Rust</span>
-            <a href="https://vortecore.pages.dev" target="_blank" class="card-link">Live Site ↗</a>
-          </div>
-        </article>
-
-        <!-- Vortex TokenSaver -->
-        <article class="card">
-          <div class="card-tag">AI INFRASTRUCTURE</div>
-          <h3>Vortex TokenSaver</h3>
-          <p>Universal AI CLI quota saver proxy. Saves 30%-60% tokens for Claude Code, Antigravity, and Hermes through semantic lossless de-fluffing and system deduplication.</p>
-          <div class="card-footer">
-            <span style="font-size: 0.85rem; color: var(--muted);">Node.js Proxy</span>
-            <a href="https://github.com/athallajovian9-cyber/VortexTokenSaver" target="_blank" class="card-link">View Repo ↗</a>
-          </div>
-        </article>
-
-        <!-- Vortex Pulse -->
-        <article class="card">
-          <div class="card-tag">SYSTEM TELEMETRY</div>
-          <h3>Vortex Pulse</h3>
-          <p>Cyberpunk hardware HUD with zero external dependencies. Interfaces directly with Win32 kernel32 C-structs, rendering live 60 FPS CPU & RAM oscilloscope waveforms.</p>
-          <div class="card-footer">
-            <span style="font-size: 0.85rem; color: var(--muted);">Native Win32 HUD</span>
-            <a href="https://github.com/athallajovian9-cyber/VortexPulse" target="_blank" class="card-link">View Repo ↗</a>
-          </div>
-        </article>
-
-        <!-- CodeCoach Core -->
-        <article class="card">
-          <div class="card-tag">EDUCATION ENGINE</div>
-          <h3>CodeCoach 2.0</h3>
-          <p>Unified kid-friendly multi-language code review engine built in TypeScript and Node.js. Catches runaway freeze loops and bugs across Python, TS, JS, Luau, and HTML.</p>
-          <div class="card-footer">
-            <span style="font-size: 0.85rem; color: var(--muted);">TypeScript & Node.js</span>
-            <a href="https://github.com/athallajovian9-cyber/CodeCoachCore" target="_blank" class="card-link">View Repo ↗</a>
-          </div>
-        </article>
-
-        <!-- BioLang -->
-        <article class="card">
-          <div class="card-tag">COMPILERS & RUNTIMES</div>
-          <h3>BioLang</h3>
-          <p>A programming language where keywords are biological mechanisms. Self-hosting milestone stage 3: lexer, parser, and runtime evaluator written directly in BioLang.</p>
-          <div class="card-footer">
-            <span style="font-size: 0.85rem; color: var(--muted);">Self-Hosting Compiler</span>
-            <a href="https://github.com/athallajovian9-cyber/BioLang" target="_blank" class="card-link">View Repo ↗</a>
-          </div>
-        </article>
-
-        <!-- GrokBot Free -->
-        <article class="card">
-          <div class="card-tag">AUTONOMOUS ASSISTANTS</div>
-          <h3>GrokBot Free</h3>
-          <p>Desktop AI workstation featuring zero-cost BYOK engine, persistent memory buffers, multi-bot routing, and direct desktop tool execution.</p>
-          <div class="card-footer">
-            <span style="font-size: 0.85rem; color: var(--muted);">Autonomous AI</span>
-            <a href="https://discord.gg/QtyBucygQ6" target="_blank" class="card-link">Join Discord ↗</a>
-          </div>
-        </article>
-
+      <p class="hero-sub">Next-generation compute interfaces. A floating quantum microprocessor cube suspended in the neon void, radiating infinite outward logic pulses.</p>
+      <div class="scroll-indicator">
+        <span>SCROLL TO ENTER INNER CIRCUIT MATRIX</span> ↓
       </div>
     </section>
 
-    <!-- Founder Recognition -->
-    <div class="founder-banner">
-      <div class="founder-info">
-        <h2>Founded by Athalla Jovian Maharsa</h2>
-        <p>Vortex Industries was conceived and built from the ground up by its sole founder, dedicated to open-source software, lightning-fast microkernels, and zero-compromise developer tooling.</p>
+    <!-- Stage 02: Outer Matrix -->
+    <section class="stage stage-02" id="stage2">
+      <div class="matrix-grid">
+        <div class="glass-card">
+          <div class="tag">SYSTEMS ARCHITECTURE</div>
+          <h3>VortecoreOS</h3>
+          <p>Freestanding 64-bit microkernel with 32-bit linear framebuffer VESA compositor and dynamic runtime profile engine (Gaming 240Hz, RTOS, Dev, Hardened).</p>
+        </div>
+        <div class="glass-card">
+          <div class="tag">AI TRANSPORT PROXY</div>
+          <h3>Vortex TokenSaver</h3>
+          <p>Universal AI CLI quota optimizer saving 30% to 60% of token consumption for Claude Code, Antigravity, and Hermes through semantic loss-less de-fluffing.</p>
+        </div>
+        <div class="glass-card">
+          <div class="tag">SYSTEM TELEMETRY</div>
+          <h3>Vortex Pulse</h3>
+          <p>Direct Win32 kernel32 C-struct telemetry monitor with live 60 FPS oscilloscope waveforms. Zero external dependencies.</p>
+        </div>
+        <div class="glass-card">
+          <div class="tag">COMPILERS & RUNTIMES</div>
+          <h3>BioLang & CodeCoach</h3>
+          <p>Biological syntax self-hosting programming language (Stage 3 Evaluator) alongside unified multi-language AST educational analysis.</p>
+        </div>
       </div>
-      <div>
-        <a href="https://discord.gg/QtyBucygQ6" target="_blank" class="btn-discord" style="font-size: 1rem; padding: 14px 28px;">
+    </section>
+
+    <!-- Stage 03: Circuit Injection -->
+    <section class="stage stage-03" id="stage3">
+      <div class="dive-panel">
+        <div class="tag">STAGE 03 // CORE PENETRATION</div>
+        <h2>Direct Memory Core Injection</h2>
+        <p style="color: var(--muted); font-size: 1.2rem; line-height: 1.7; max-width: 750px;">
+          Passing through towering neon logic walls. Real-time data streams and low-level freestanding assembly routines communicate with sub-microsecond latency.
+        </p>
+        <div class="dive-stats">
+          <div class="stat-box">
+            <div class="stat-val">0.00 ns</div>
+            <div class="stat-label">RTOS Jitter Ceiling</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val">60%</div>
+            <div class="stat-label">Max Token Quota Saved</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val">240 Hz</div>
+            <div class="stat-label">Compositor Refresh</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val">0 MB</div>
+            <div class="stat-label">External Bloat</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 04: Infinite Canvas -->
+    <section class="stage stage-04" id="stage4">
+      <div class="monument-box">
+        <div class="tag">FOUNDED BY ATHALLA JOVIAN MAHARSA</div>
+        <h2>Vortex Community // Infinite Lattice</h2>
+        <p>Vortex Industries was conceived, designed, and built solely by its founder. Join the official Discord server now to automatically claim your permanent First 100 Badge before public caps close.</p>
+        <a href="https://discord.gg/QtyBucygQ6" target="_blank" class="btn-discord-large">
           Claim First 100 Badge 💎
         </a>
       </div>
-    </div>
+    </section>
 
     <footer>
-      <p>© 2026 Vortex Industries. Built by <a href="https://athalla-projects.pages.dev" target="_blank">Athalla Jovian Maharsa</a>. Hosted on Cloudflare Pages.</p>
+      <p>© 2026 Vortex Industries. Sole Founder: <a href="https://athalla-projects.pages.dev" target="_blank">Athalla Jovian Maharsa</a>. Deployed to Cloudflare Pages.</p>
     </footer>
+
   </div>
 
-  <!-- Interactive Hyperspace Nebula Canvas Script -->
+  <!-- Three.js + GSAP Scroll Storyboard Engine -->
   <script>
-    const canvas = document.getElementById('bg-canvas');
-    const ctx = canvas.getContext('2d');
+    gsap.registerPlugin(ScrollTrigger);
 
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+    const canvas = document.getElementById('webgl-canvas');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x010409, 0.018);
 
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
+    const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0.5, 16);
 
-    <!-- Interactive 3D Nebula & Hyperspace Warp Drive Canvas -->
-    const canvas = document.getElementById('bg-canvas');
-    const ctx = canvas.getContext('2d');
-
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    const STARS_COUNT = 180;
-    const stars = [];
+    // 1. Quantum Microprocessor Cube Group
+    const chipGroup = new THREE.Group();
+    scene.add(chipGroup);
 
-    for (let i = 0; i < STARS_COUNT; i++) {
-      stars.push({
-        x: (Math.random() - 0.5) * width * 2,
-        y: (Math.random() - 0.5) * height * 2,
-        z: Math.random() * width,
-        color: Math.random() > 0.4 ? 'rgba(0, 240, 255, ' : (Math.random() > 0.5 ? 'rgba(168, 85, 247, ' : 'rgba(236, 72, 153, ')
-      });
+    // Inner Silicon Wafer
+    const coreGeo = new THREE.BoxGeometry(4.2, 4.2, 4.2);
+    const coreMat = new THREE.MeshBasicMaterial({
+      color: 0x00F0FF,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.85
+    });
+    const coreCube = new THREE.Mesh(coreGeo, coreMat);
+    chipGroup.add(coreCube);
+
+    // Outer Matrix Armor Shell (Splits open during Stage 2)
+    const shellGeo = new THREE.BoxGeometry(5.4, 5.4, 5.4);
+    const shellMat = new THREE.MeshBasicMaterial({
+      color: 0x8B5CF6,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.45
+    });
+    const shellCube = new THREE.Mesh(shellGeo, shellMat);
+    chipGroup.add(shellCube);
+
+    // Stage 3 Logic Pillars (Towering Logic Tunnel)
+    const gateGroup = new THREE.Group();
+    scene.add(gateGroup);
+    gateGroup.position.set(0, 0, -18);
+
+    const pillarGeo = new THREE.BoxGeometry(0.35, 28, 0.35);
+    for (let i = 0; i < 44; i++) {
+      const pColor = i % 2 === 0 ? 0x00F0FF : 0x8B5CF6;
+      const pillarMat = new THREE.MeshBasicMaterial({ color: pColor, wireframe: true, transparent: true, opacity: 0.65 });
+      const pillarL = new THREE.Mesh(pillarGeo, pillarMat);
+      const pillarR = new THREE.Mesh(pillarGeo, pillarMat);
+
+      pillarL.position.set(-8.5 - (i % 3), (Math.random() - 0.5) * 6, -i * 2.8);
+      pillarR.position.set(8.5 + (i % 3), (Math.random() - 0.5) * 6, -i * 2.8);
+
+      gateGroup.add(pillarL);
+      gateGroup.add(pillarR);
     }
 
-    let mouse = { x: 0, y: 0 };
-    window.addEventListener('mousemove', e => {
-      mouse.x = (e.clientX - width / 2) * 0.04;
-      mouse.y = (e.clientY - height / 2) * 0.04;
+    // Outward Light Pulses (Data emerging from the center toward the camera)
+    const particleCount = 1400;
+    const pGeo = new THREE.BufferGeometry();
+    const pPos = new Float32Array(particleCount * 3);
+    const pVel = new Float32Array(particleCount);
+
+    for (let i = 0; i < particleCount; i++) {
+      pPos[i * 3] = (Math.random() - 0.5) * 25;
+      pPos[i * 3 + 1] = (Math.random() - 0.5) * 25;
+      pPos[i * 3 + 2] = (Math.random() - 0.5) * 90;
+      pVel[i] = Math.random() * 0.25 + 0.15; // Outward velocity toward camera
+    }
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+
+    const pMat = new THREE.PointsMaterial({
+      color: 0x00F0FF,
+      size: 0.16,
+      transparent: true,
+      opacity: 0.85
+    });
+    const particles = new THREE.Points(pGeo, pMat);
+    scene.add(particles);
+
+    // Mouse Hover Parallax
+    let mouseX = 0;
+    let mouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
     });
 
+    // 4-Stage Scrubbing Timeline (Driven by Blender Spline Coordinates)
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".scroll-container",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1.2
+      }
+    });
+
+    // Stage 1 -> Stage 2: Camera dolls forward, outer matrix splits
+    tl.to(camera.position, { x: 0.8, y: -0.4, z: 7.0, ease: "power1.inOut" }, 0)
+      .to(shellCube.scale, { x: 1.8, y: 1.8, z: 1.8, ease: "power1.out" }, 0)
+      .to(shellMat, { opacity: 0.2 }, 0);
+
+    // Stage 2 -> Stage 3: Camera accelerates directly into the core circuit pathway
+    tl.to(camera.position, { x: -0.5, y: 0.2, z: -18.0, ease: "power2.inOut" }, 1)
+      .to(coreCube.scale, { x: 4.2, y: 4.2, z: 4.2 }, 1)
+      .to(coreMat, { opacity: 0.15 }, 1);
+
+    // Stage 3 -> Stage 4: Camera emerges through logic walls into infinite lattice
+    tl.to(camera.position, { x: 0.0, y: 0.0, z: -60.0, ease: "none" }, 2)
+      .to(particles.rotation, { z: Math.PI }, 2);
+
+    // Render loop
+    let clock = new THREE.Clock();
     function animate() {
-      ctx.fillStyle = "rgba(3, 7, 18, 0.25)";
-      ctx.fillRect(0, 0, width, height);
+      requestAnimationFrame(animate);
+      const elapsedTime = clock.getElapsedTime();
 
-      const cx = width / 2;
-      const cy = height / 2;
+      // Ambient hover rotation & floating physics
+      chipGroup.rotation.y = elapsedTime * 0.25 + mouseX * 0.2;
+      chipGroup.rotation.x = Math.sin(elapsedTime * 0.3) * 0.15 + mouseY * 0.15;
+      chipGroup.position.y = Math.sin(elapsedTime * 0.8) * 0.25;
 
-      for (let i = 0; i < STARS_COUNT; i++) {
-        const s = stars[i];
-        s.z -= 2.8;
-
-        if (s.z <= 0) {
-          s.z = width;
-          s.x = (Math.random() - 0.5) * width * 2;
-          s.y = (Math.random() - 0.5) * height * 2;
-        }
-
-        const k = 240 / s.z;
-        const px = (s.x + mouse.x * (s.z * 0.015)) * k + cx;
-        const py = (s.y + mouse.y * (s.z * 0.015)) * k + cy;
-
-        if (px >= 0 && px <= width && py >= 0 && py <= height) {
-          const size = Math.max(0.7, (1 - s.z / width) * 3.2);
-          const alpha = (1 - s.z / width);
-          ctx.beginPath();
-          ctx.arc(px, py, size, 0, Math.PI * 2);
-          ctx.fillStyle = s.color + alpha + ')';
-          ctx.shadowBlur = size * 5;
-          ctx.shadowColor = s.color + '1)';
-          ctx.fill();
-          ctx.shadowBlur = 0;
+      // Pulse logic data streams outward toward camera
+      const positions = pGeo.attributes.position.array;
+      for (let i = 0; i < particleCount; i++) {
+        positions[i * 3 + 2] += pVel[i];
+        if (positions[i * 3 + 2] > 25) {
+          positions[i * 3 + 2] = -60;
         }
       }
+      pGeo.attributes.position.needsUpdate = true;
 
-      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
     }
     animate();
   </script>
