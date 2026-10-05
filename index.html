@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
   <style>
     :root {
       --bg: #030712;
@@ -346,6 +347,25 @@
         <span class="gradient-word">Beyond Silicon.</span>
       </h1>
       <p>Home of high-speed x86_64 microkernels, ultra-lightweight telemetry monitors, AI CLI quota optimizers, and educational developer suites.</p>
+
+      <!-- Interactive 3D Model Rendered with Blender -->
+      <div style="width: 100%; max-width: 480px; height: 380px; margin: 0 auto 36px; position: relative;">
+        <model-viewer
+          src="vortex_core.glb"
+          alt="3D Quantum Vortex Core modeled in Blender"
+          auto-rotate
+          rotation-per-second="25deg"
+          camera-controls
+          disable-zoom
+          shadow-intensity="2"
+          exposure="1.2"
+          style="width: 100%; height: 100%; --poster-color: transparent;"
+        ></model-viewer>
+        <div style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--cyan); background: rgba(3, 7, 18, 0.7); padding: 4px 12px; border-radius: 9999px; border: 1px solid rgba(0, 240, 255, 0.3); pointer-events: none;">
+          ⚡ BLENDER 3D GYROSCOPE // DRAG TO ROTATE
+        </div>
+      </div>
+
       <div class="hero-cta">
         <a href="#showcase" class="btn-primary">Explore Technologies</a>
       </div>
