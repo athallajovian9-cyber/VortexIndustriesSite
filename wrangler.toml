@@ -1,0 +1,9 @@
+# Cloudflare Pages deployment for Vortex Industries Site
+# The site is a static page - index.html is the output.
+#   wrangler pages deploy . --project-name=vortex-industries
+# Nothing secret lives here. The account id and API token go in the environment
+# (CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN), never in this file.
+
+name = "vortex-industries"
+compatibility_date = "2026-10-01"
+pages_build_output_dir = "."
