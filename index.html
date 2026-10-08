@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Vortex Industries builds low-level developer tools: VortecoreOS, Vortex TokenSaver, Vortex Pulse, BioLang and more. Join the Discord to claim the First 100 Badge.">
+  <meta name="theme-color" content="#010409">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2300F0FF'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='20' font-weight='900' text-anchor='middle' fill='%23010409'%3EV%3C/text%3E%3C/svg%3E">
   <title>VORTEX INDUSTRIES // THE QUANTUM CIRCUIT</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -319,20 +322,48 @@
       z-index: 10;
     }
     footer a { color: var(--cyan); text-decoration: none; font-weight: 700; }
+
+    /* Quality floor: legible nav, keyboard focus, responsive layout, reduced motion */
+    nav { background: rgba(1, 4, 9, 0.55); }
+    a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+    .btn-badge, .btn-discord-large { white-space: nowrap; }
+    @media (max-width: 860px) {
+      nav { padding: 16px 20px; }
+      .brand { font-size: 1.05rem; }
+      .btn-badge { padding: 8px 14px; font-size: 0.78rem; }
+      .stage { padding: 112px 20px 72px; }
+      .hero-title { font-size: clamp(2.3rem, 11vw, 4.2rem); }
+      .matrix-grid { grid-template-columns: 1fr; gap: 20px; }
+      .glass-card { padding: 28px; backdrop-filter: blur(14px); }
+      .glass-card h3 { font-size: 1.6rem; }
+      .dive-panel { padding: 32px 24px; backdrop-filter: blur(16px); }
+      .dive-panel h2 { font-size: 2.1rem; }
+      .monument-box { padding: 40px 24px; backdrop-filter: blur(16px); }
+      .monument-box h2 { font-size: 2rem; }
+      .btn-discord-large { padding: 16px 28px; font-size: 1rem; }
+    }
+    @media (max-width: 480px) {
+      .brand span { display: none; }
+      .pill { font-size: 0.7rem; padding: 8px 16px; text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-indicator { animation: none; }
+      .glass-card, .btn-badge, .btn-discord-large { transition: none; }
+    }
   </style>
 </head>
 <body>
 
   <!-- Pinned Three.js Quantum Microprocessor Canvas -->
-  <canvas id="webgl-canvas"></canvas>
+  <canvas id="webgl-canvas" aria-hidden="true"></canvas>
 
   <nav>
-    <a href="#" class="brand">
+    <a href="#" class="brand" aria-label="Vortex Industries, back to top">
       <div class="brand-core">V</div>
       <span>VORTEX INDUSTRIES</span>
     </a>
     <div>
-      <a href="https://discord.gg/QtyBucygQ6" target="_blank" class="btn-badge">💎 Claim First 100 Badge</a>
+      <a href="https://discord.gg/QtyBucygQ6" target="_blank" rel="noopener noreferrer" class="btn-badge">💎 Claim First 100 Badge</a>
     </div>
   </nav>
 
@@ -443,20 +474,23 @@
         <div class="tag">FOUNDED BY ATHALLA JOVIAN MAHARSA</div>
         <h2>Vortex Community // Infinite Lattice</h2>
         <p>Vortex Industries was conceived, designed, and built solely by its founder. Join the official Discord server now to automatically claim your permanent First 100 Badge before public caps close.</p>
-        <a href="https://discord.gg/QtyBucygQ6" target="_blank" class="btn-discord-large">
+        <a href="https://discord.gg/QtyBucygQ6" target="_blank" rel="noopener noreferrer" class="btn-discord-large">
           Claim First 100 Badge 💎
         </a>
       </div>
     </section>
 
     <footer>
-      <p>© 2026 Vortex Industries. Sole Founder: <a href="https://athalla-projects.pages.dev" target="_blank">Athalla Jovian Maharsa</a>. Deployed to Cloudflare Pages.</p>
+      <p>© 2026 Vortex Industries. Sole Founder: <a href="https://athalla-projects.pages.dev" target="_blank" rel="noopener noreferrer">Athalla Jovian Maharsa</a>. Deployed to Cloudflare Pages.</p>
     </footer>
 
   </div>
 
   <!-- Three.js + GSAP Scroll Storyboard Engine -->
   <script>
+  (function () {
+    'use strict';
+    if (!window.THREE || !window.gsap || !window.ScrollTrigger) { return; }
     gsap.registerPlugin(ScrollTrigger);
 
     const canvas = document.getElementById('webgl-canvas');
@@ -466,9 +500,17 @@
     const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, 0.5, 16);
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    } catch (err) {
+      console.error('WebGL unavailable, showing the static page:', err);
+      canvas.style.display = 'none';
+      return;
+    }
+    const maxDpr = window.innerWidth < 860 ? 1.5 : 2;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxDpr));
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -552,7 +594,7 @@
       mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
     });
 
-    // 4-Stage Scrubbing Timeline (Driven by Blender Spline Coordinates)
+    // 4-Stage Scrubbing Timeline (camera rides the spline rail defined below)
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: ".scroll-container",
@@ -562,44 +604,61 @@
       }
     });
 
-    // Stage 1 -> Stage 2: Camera dolls forward, outer matrix splits
-    tl.to(camera.position, { x: 0.8, y: -0.4, z: 7.0, ease: "power1.inOut" }, 0)
+    // Camera rail: Catmull-Rom spline; every 3rd point is a stage waypoint.
+    // Replace these points with samples of a Blender curve if you author the path there.
+    const rail = new THREE.CatmullRomCurve3([
+      [0.0, 0.5, 16], [0.9, 0.3, 13], [1.3, -0.1, 9.8],
+      [0.8, -0.4, 7], [0.2, -0.5, 1], [-0.8, -0.2, -8],
+      [-0.5, 0.2, -18], [-0.9, 0.5, -30], [0.5, 0.3, -45],
+      [0.0, 0.0, -60]
+    ].map((p) => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal');
+    const railState = { t: 0 };
+    const placeCamera = () => { rail.getPoint(railState.t, camera.position); };
+    placeCamera();
+
+    // Stage 1 -> Stage 2: Camera dollies forward, outer matrix splits
+    tl.to(railState, { t: 1 / 3, ease: "power1.inOut" }, 0)
       .to(shellCube.scale, { x: 1.8, y: 1.8, z: 1.8, ease: "power1.out" }, 0)
       .to(shellMat, { opacity: 0.2 }, 0);
 
-    // Stage 2 -> Stage 3: Camera accelerates directly into the core circuit pathway
-    tl.to(camera.position, { x: -0.5, y: 0.2, z: -18.0, ease: "power2.inOut" }, 1)
+    // Stage 2 -> Stage 3: Camera accelerates into the core circuit pathway
+    tl.to(railState, { t: 2 / 3, ease: "power2.inOut" }, 1)
       .to(coreCube.scale, { x: 4.2, y: 4.2, z: 4.2 }, 1)
       .to(coreMat, { opacity: 0.15 }, 1);
 
-    // Stage 3 -> Stage 4: Camera emerges through logic walls into infinite lattice
-    tl.to(camera.position, { x: 0.0, y: 0.0, z: -60.0, ease: "none" }, 2)
+    // Stage 3 -> Stage 4: Camera emerges through the logic walls into the infinite lattice
+    tl.to(railState, { t: 1, ease: "none" }, 2)
       .to(particles.rotation, { z: Math.PI }, 2);
 
-    // Render loop
-    let clock = new THREE.Clock();
+    // Render loop: frame-rate independent; particles wrap around the camera
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) { chipGroup.rotation.set(0.35, 0.6, 0); }
+    const clock = new THREE.Clock();
+    const WRAP = 85;
     function animate() {
       requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
+      const frames = Math.min(clock.getDelta(), 0.05) * 60;
+      const elapsedTime = clock.elapsedTime;
 
-      // Ambient hover rotation & floating physics
-      chipGroup.rotation.y = elapsedTime * 0.25 + mouseX * 0.2;
-      chipGroup.rotation.x = Math.sin(elapsedTime * 0.3) * 0.15 + mouseY * 0.15;
-      chipGroup.position.y = Math.sin(elapsedTime * 0.8) * 0.25;
+      if (!reduceMotion) {
+        chipGroup.rotation.y = elapsedTime * 0.25 + mouseX * 0.2;
+        chipGroup.rotation.x = Math.sin(elapsedTime * 0.3) * 0.15 + mouseY * 0.15;
+        chipGroup.position.y = Math.sin(elapsedTime * 0.8) * 0.25;
+      }
 
-      // Pulse logic data streams outward toward camera
+      placeCamera();
       const positions = pGeo.attributes.position.array;
+      const zMin = camera.position.z - 60;
       for (let i = 0; i < particleCount; i++) {
-        positions[i * 3 + 2] += pVel[i];
-        if (positions[i * 3 + 2] > 25) {
-          positions[i * 3 + 2] = -60;
-        }
+        const z = positions[i * 3 + 2] + (reduceMotion ? 0 : pVel[i] * frames);
+        positions[i * 3 + 2] = zMin + (((z - zMin) % WRAP) + WRAP) % WRAP;
       }
       pGeo.attributes.position.needsUpdate = true;
 
       renderer.render(scene, camera);
     }
     animate();
+  })();
   </script>
 </body>
 </html>
